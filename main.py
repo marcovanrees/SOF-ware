@@ -58,6 +58,7 @@ def config_interface(num,status):
 
 
 
+
 if __name__ == "__main__":
     data = get_interfaces()         # ophalen van de interface-informatie van de router.
     show_interfaces(data)           # Print de interface met de description.
