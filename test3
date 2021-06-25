@@ -1,0 +1,63 @@
+import requests
+import urllib3
+
+# Disable warning for unverified SSL certificates
+urllib3.disable_warnings()
+
+host = "10.10.20.48"
+port = 443
+username = "developer"
+password = "C1sco12345"
+
+url = f"https://{host}:{port}/restconf/data/ietf-interfaces:interfaces"
+
+headers = {
+       "Content-Type": "application/yang-data+json",
+       "Accept": "application/yang-data+json",
+}
+
+
+def get_interfaces():
+    response = requests.get(url, headers=headers, auth=(username, password), verify=False)
+    if response.status_code != 200:
+        print(f"Error {response.status_code}")
+    return response.json()
+
+
+def show_interfaces(data):
+    interface_lijst = data['ietf-interfaces:interfaces']['interface']
+    for interface in interface_lijst:
+        name= interface['name']
+        description = ['description']
+        print(f"{name}: {description}")
+
+def config_interface(num):
+    configuratie = {
+        "ietf-interfaces:interface": {
+            "name": "GigabitEthernet" + (str(num)),
+            "description": "MANAGEMENT INTERFACE - test1",
+            "type": "iana-if-type:ethernetCsmacd",
+            "enabled": "true",
+            "ietf-ip:ipv4": {
+                "address": [
+                    {
+                        "ip": "10.10.20.48",
+                        "netmask": "255.255.255.0"
+                    }
+                ]
+            },
+            "ietf-ip:ipv6": {
+            }
+        }
+    }
+    response = requests.put(url, headers=headers, auth=(username, password), verify=False)
+
+
+
+
+if __name__ == "__main__":
+
+    data = get_interfaces()
+    show_interfaces(data)
+#    config_interface(2)
+    show_interfaces(data)
